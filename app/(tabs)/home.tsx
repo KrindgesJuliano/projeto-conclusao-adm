@@ -1,20 +1,31 @@
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import Item from '@/components/Item';
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+
+      <ScrollView contentContainerStyle={styles.scrollStyle}>
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 10,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -23,9 +34,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+  scrollStyle: {
+    width: '100%',
+    padding: 10,
+    display: 'flex',
+    gap: 10
+  }
 });
