@@ -4,10 +4,7 @@ import { View } from '@/components/Themed';
 import { StyledButton } from '@/components/StyledButton';
 import { Controller, useForm } from 'react-hook-form';
 import { useState, useCallback } from 'react';
-import * as SQLite from 'expo-sqlite';
-
-
-const db = SQLite.openDatabase('database.db');
+import { saveNewPlayer } from '@/db/sqlite';
 
 interface FormData {
   nome: string;
@@ -22,7 +19,7 @@ interface FormData {
 }
 
 export default function TabTwoScreen() {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const { control, handleSubmit, reset, getValues, setError, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       nome: '',
       sobrenome: '',
@@ -40,40 +37,8 @@ export default function TabTwoScreen() {
   const onSubmit = (data: FormData) => {
     console.log(`Submitted Data:  `, data);
     setSubmittedData(data);
-
-    db.transaction((tx: any) => {
-      tx.executeSql(
-        `INSERT INTO profile (
-          nome,
-          sobrenome,
-          email,
-          cep,
-          rua,
-          numero,
-          bairro,
-          cidade,
-          uf
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-        [
-          data.nome,
-          data.sobrenome,
-          data.email,
-          data.cep,
-          data.rua,
-          data.numero,
-          data.bairro,
-          data.cidade,
-          data.uf,
-        ],
-        (txResult: any) => {
-          console.log("Dados salvos com sucesso");
-        },
-        (txError: any) => {
-          console.error("Erro ao salvar dados: ", txError);
-        }
-      );
-    }, (error: any) => {
-      console.error("Erro ao abrir banco de dados: ", error);
+    saveNewPlayer(data).then((res) => {
+      console.log(`Dados salvos com sucesso: `, res);
     });
   }
 
@@ -96,10 +61,17 @@ export default function TabTwoScreen() {
     if (cep) {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
       const json = await response.json()
-      console.log(`JSON: `, json)
+
+      if (json.erro) {
+        setError('cep', {
+          type: 'custom',
+          message: 'CEP não encontrado',
+        })
+        return
+      }
 
       const { logradouro, bairro, localidade, uf } = json
-      reset({ ...submittedData, rua: logradouro, bairro, cidade: localidade, uf })
+      reset({ nome: getValues(`nome`), sobrenome: getValues(`sobrenome`), email: getValues(`email`), cep: getValues(`cep`), rua: logradouro, bairro, cidade: localidade, uf })
     }
 
   }, [])

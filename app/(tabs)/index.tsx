@@ -1,23 +1,34 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { Button, ScrollView, StyleSheet } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 import Item from '@/components/Item';
+import { useEffect, useState } from 'react';
+import { getPlayers } from '@/db/sqlite';
 
 export default function TabOneScreen() {
+  const [players, setPlayers] = useState<any>([]);
+
+  const GetPlayes = async () => {
+    const players = await getPlayers();
+    setPlayers(players);
+  }
+
+  useEffect(() => {
+    async () => {
+      const players = await getPlayers();
+      setPlayers(players);
+    }
+  }, [])
+
+
   return (
     <View style={styles.container}>
-
+      <Button title='Player' onPress={() => GetPlayes()} />
       <ScrollView contentContainerStyle={styles.scrollStyle}>
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
-        <Item name="João" phone="123456789" address="Rua ABC" city="São Paulo" />
+        {players.map((player: any) => (
+          <Item key={player.id} name={player.nome} phone={player.telefone} address={player.rua} city={player.cidade} />
+        ))}
+
       </ScrollView>
     </View>
   );
