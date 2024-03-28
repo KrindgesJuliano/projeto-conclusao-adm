@@ -1,4 +1,5 @@
-import { Pressable, SafeAreaView, StyleSheet, TextInput, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, TextInput, Text } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { View } from '@/components/Themed';
 import { StyledButton } from '@/components/StyledButton';
@@ -39,6 +40,13 @@ export default function TabTwoScreen() {
     setSubmittedData(data);
     saveNewPlayer(data).then((res) => {
       console.log(`Dados salvos com sucesso: `, res);
+      Toast.show({
+        type: `success`,
+        text1: `Sucesso`,
+        text2: `Competidor ${data.nome} Salvo com Sucesso!`,
+      })
+      setSubmittedData({} as FormData);
+      reset({ nome: '', sobrenome: '', email: '', cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '' });
     });
   }
 
@@ -202,7 +210,6 @@ export default function TabTwoScreen() {
           <StyledButton title="Cancelar" onPress={() => handleClear()} color='tomato' grow={1} />
           <StyledButton title="Salvar" onPress={handleSubmit(onSubmit)} color='green' grow={1} />
         </View>
-        <Text style={styles.title}>{JSON.stringify(submittedData)}</Text>
       </View>
     </SafeAreaView>
   );
