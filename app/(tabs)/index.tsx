@@ -26,7 +26,7 @@ export default function TabOneScreen() {
       {/* <Button title='Player' onPress={() => GetPlayers()} /> */}
       <ScrollView contentContainerStyle={styles.scrollStyle}>
         {players.length > 0 ? players.map((player: any) => (
-          <Item key={player.id} name={player.nome} phone={player.telefone} address={player.rua} city={player.cidade} />
+          <Item key={player.id} name={player.nome} phone={player.telefone} address={player.rua} city={player.cidade} id={player.id} />
         )) :
           <View>
             <Text style={styles.title}>

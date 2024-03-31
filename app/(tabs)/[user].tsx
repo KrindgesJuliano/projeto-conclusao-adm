@@ -2,13 +2,13 @@ import { SafeAreaView, StyleSheet, TextInput, Text, Button } from 'react-native'
 import { useState, useCallback } from 'react';
 import Toast from 'react-native-toast-message';
 import { Controller, useForm } from 'react-hook-form';
-import { router, useNavigation } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 
 import { View } from '@/components/Themed';
 import { StyledButton } from '@/components/StyledButton';
-import { deleteAllPlayers, saveNewPlayer } from '@/db/sqlite';
+import { deleteAllPlayers, findPlayerById, saveNewPlayer, updatePlayer } from '@/db/sqlite';
 
-interface FormData {
+export interface FormData {
   nome: string;
   sobrenome: string;
   email: string;
@@ -21,7 +21,8 @@ interface FormData {
 }
 
 export default function TabTwoScreen() {
-  const navigation = useNavigation();
+  const { user, id } = useLocalSearchParams();
+
   const { control, handleSubmit, reset, getValues, setError, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       nome: '',
@@ -40,24 +41,46 @@ export default function TabTwoScreen() {
   const onSubmit = (data: FormData) => {
     console.log(`Submitted Data:  `, data);
     setSubmittedData(data);
-    saveNewPlayer(data).then((res) => {
-      console.log(`Dados salvos com sucesso: `, res);
-      Toast.show({
-        type: `success`,
-        text1: `Sucesso`,
-        text2: `Competidor ${data.nome} Salvo com Sucesso!`,
-      })
-      setSubmittedData({} as FormData);
-      reset({ nome: '', sobrenome: '', email: '', cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '' });
-      router.replace('/');
-    }).catch((err) => {
-      console.error(`Erro ao salvar dados do competidor: `, err);
-      Toast.show({
-        type: `error`,
-        text1: `Erro`,
-        text2: `Erro ao salvar dados do competidor: ${err}`,
-      })
-    });
+    if (user === 'new') {
+      saveNewPlayer(data).then((res) => {
+        console.log(`Dados salvos com sucesso: `, res);
+        Toast.show({
+          type: `success`,
+          text1: `Sucesso`,
+          text2: `Competidor ${data.nome} Salvo com Sucesso!`,
+        })
+        setSubmittedData({} as FormData);
+        reset({ nome: '', sobrenome: '', email: '', cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '' });
+        router.replace('/');
+      }).catch((err) => {
+        console.error(`Erro ao salvar dados do competidor: `, err);
+        Toast.show({
+          type: `error`,
+          text1: `Erro`,
+          text2: `Erro ao salvar dados do competidor: ${err}`,
+        })
+      });
+    }
+    if (user === 'edit') {
+      updatePlayer({ ...data, id: Number(id) }).then((res) => {
+        console.log(`Dados atualizados com sucesso: `, res);
+        Toast.show({
+          type: `success`,
+          text1: `Sucesso`,
+          text2: `Competidor ${data.nome} Atualizado com Sucesso!`,
+        })
+        setSubmittedData({} as FormData);
+        reset({ nome: '', sobrenome: '', email: '', cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '' });
+        router.replace('/');
+      }).catch((err: any) => {
+        console.error(`Erro ao atualizar dados do competidor: `, err);
+        Toast.show({
+          type: `error`,
+          text1: `Erro`,
+          text2: `Erro ao atualizar dados do competidor: ${err}`,
+        })
+      });
+    }
   }
 
   const handleClear = () => {
@@ -93,6 +116,42 @@ export default function TabTwoScreen() {
     }
 
   }, [])
+
+  const getEditPlayer = async () => {
+    const player: any = await findPlayerById(Number(id));
+    reset({
+      nome: player?.nome,
+      sobrenome: player?.sobrenome,
+      email: player?.email,
+      cep: player?.cep,
+      rua: player?.rua,
+      bairro: player?.bairro,
+      cidade: player?.cidade,
+      uf: player?.uf,
+      numero: player?.numero
+    });
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user === 'edit') {
+        getEditPlayer();
+      }
+      else {
+        reset({
+          nome: '',
+          sobrenome: '',
+          email: '',
+          cep: '',
+          rua: '',
+          bairro: '',
+          cidade: '',
+          uf: '',
+          numero: ''
+        });
+      }
+    }, [user, id])
+  )
 
   return (
     <SafeAreaView style={styles.container}>
@@ -221,7 +280,9 @@ export default function TabTwoScreen() {
           <StyledButton title="Salvar" onPress={handleSubmit(onSubmit)} color='green' grow={1} />
         </View>
       </View>
-      <Button title='Apagar todos' onPress={() => deleteAllPlayers()} />
+      <View style={{ marginTop: 10 }}>
+        <Button title='Apagar todos' onPress={() => deleteAllPlayers()} />
+      </View>
     </SafeAreaView>
   );
 }

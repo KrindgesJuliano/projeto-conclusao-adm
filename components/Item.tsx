@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
-export default function Item({ name, phone, address, city }: { name: string, phone: string, address: string, city: string }) {
+export default function Item({ name, phone, address, city, id }: { name: string, phone: string, address: string, city: string, id: number }) {
   return (
     <View style={styles.container}>
       <View style={styles.itens}>
@@ -11,9 +12,15 @@ export default function Item({ name, phone, address, city }: { name: string, pho
         <Text style={styles.text}>Endereço: {address}</Text>
         <Text style={styles.text}>Cidade: {city}</Text>
       </View>
-      <Pressable>
+      <Link href={{
+        pathname: `/(tabs)/[user]`,
+        params: {
+          user: "edit",
+          id
+        }
+      }}>
         <Ionicons name="person-circle-outline" size={34} color="tomato" />
-      </Pressable>
+      </Link>
     </View>
   );
 }

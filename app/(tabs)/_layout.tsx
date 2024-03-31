@@ -64,10 +64,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="perfil"
+        name="[user]"
         options={{
           title: 'Cadastro de Competidor',
           tabBarIcon: ({ color }) => <TabBarIcon name="user-circle-o" color={color} />,
+          href: {
+            pathname: '/(tabs)/[user]',
+            params: {
+              user: 'new',
+              id: 0
+            }
+          }
         }}
       />
     </Tabs>

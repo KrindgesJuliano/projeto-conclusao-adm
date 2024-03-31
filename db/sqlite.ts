@@ -63,6 +63,64 @@ export const saveNewPlayer = (data: any): Promise<boolean> => {
   });
 };
 
+export const updatePlayer = (data: any): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    if (!data) {
+      console.error("No data provided to save");
+      reject(new Error("No data provided"));
+      return;
+    }
+
+    if (!data.id) {
+      console.error("No id provided to update");
+      reject(new Error("No id provided to update"));
+      return;
+    }
+
+    db.transaction((tx: any) => {
+      if (!tx) {
+        console.error("Failed to open database");
+        reject(new Error("Failed to open database"));
+        return;
+      }
+
+      const { id, nome, sobrenome, email, cep, rua, numero, bairro, cidade, uf } = data;
+      const updateQuery = `UPDATE profile SET nome = ?, sobrenome = ?, email = ?, cep = ?, rua = ?, numero = ?, bairro = ?, cidade = ?, uf = ? WHERE id = ?;`;
+      const updateParams = [nome, sobrenome, email, cep, rua, numero, bairro, cidade, uf, id];
+
+      tx.executeSql(updateQuery, updateParams, (txResult: any) => {
+        const rowsAffected = txResult.rowsAffected;
+        if (rowsAffected === 0) {
+          console.error(`Nenhum registro encontrado para o id ${id}`);
+          reject(new Error(`Nenhum registro encontrado para o id ${id}`));
+        } else {
+          console.log(`${rowsAffected} registro(s) atualizado(s) com sucesso`);
+          resolve(true);
+        }
+      }, (txError: any) => {
+        console.error("Erro ao atualizar dados do competidor: ", txError);
+        reject(txError);
+      });
+    })
+  });
+};
+
+
+
+export const findPlayerById = (id: number): Promise<any[]> => {
+  console.log("findPlayerById: ", id);
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: any) => {
+      tx.executeSql(
+        'SELECT * FROM profile WHERE id = ?',
+        [id],
+        (_: any, result: any) => resolve(result.rows._array[0]),
+        (_: any, error: any) => { reject(error); return false }
+      );
+    });
+  });
+}
+
 
 export const deleteAllPlayers = (): Promise<boolean> => {
   return new Promise((resolve, reject) => {
