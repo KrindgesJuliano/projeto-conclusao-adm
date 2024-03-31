@@ -1,11 +1,12 @@
-import { SafeAreaView, StyleSheet, TextInput, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, TextInput, Text, Button } from 'react-native';
+import { useState, useCallback } from 'react';
 import Toast from 'react-native-toast-message';
+import { Controller, useForm } from 'react-hook-form';
+import { router, useNavigation } from 'expo-router';
 
 import { View } from '@/components/Themed';
 import { StyledButton } from '@/components/StyledButton';
-import { Controller, useForm } from 'react-hook-form';
-import { useState, useCallback } from 'react';
-import { saveNewPlayer } from '@/db/sqlite';
+import { deleteAllPlayers, saveNewPlayer } from '@/db/sqlite';
 
 interface FormData {
   nome: string;
@@ -20,6 +21,7 @@ interface FormData {
 }
 
 export default function TabTwoScreen() {
+  const navigation = useNavigation();
   const { control, handleSubmit, reset, getValues, setError, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       nome: '',
@@ -47,6 +49,14 @@ export default function TabTwoScreen() {
       })
       setSubmittedData({} as FormData);
       reset({ nome: '', sobrenome: '', email: '', cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '' });
+      router.replace('/');
+    }).catch((err) => {
+      console.error(`Erro ao salvar dados do competidor: `, err);
+      Toast.show({
+        type: `error`,
+        text1: `Erro`,
+        text2: `Erro ao salvar dados do competidor: ${err}`,
+      })
     });
   }
 
@@ -98,7 +108,7 @@ export default function TabTwoScreen() {
             />
           )}
           name="nome"
-          rules={{ required: 'You must enter your name' }}
+          rules={{ required: 'Nome é obrigatório', minLength: { value: 3, message: 'Nome deve ter pelo menos 3 letras' } }}
         />
         {errors.nome && <Text style={styles.errorText}>{errors.nome.message}</Text>}
 
@@ -112,7 +122,7 @@ export default function TabTwoScreen() {
               placeholder="Segundo Nome"
               style={styles.textInput} />
           )}
-          rules={{ required: 'Sobrenome é obrigatório' }}
+          rules={{ required: 'Sobrenome é obrigatório', minLength: { value: 3, message: 'Sobrenome deve ter pelo menos 3 letras' } }}
         />
         {errors.sobrenome && <Text style={styles.errorText}>{errors.sobrenome.message}</Text>}
         <Controller
@@ -126,7 +136,7 @@ export default function TabTwoScreen() {
               style={styles.textInput}
             />
           )}
-          rules={{ required: 'Email é obrigatório' }}
+          rules={{ required: 'E-mail é obrigatório', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'E-mail inválido' } }}
         />
         {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
         <Controller
@@ -211,6 +221,7 @@ export default function TabTwoScreen() {
           <StyledButton title="Salvar" onPress={handleSubmit(onSubmit)} color='green' grow={1} />
         </View>
       </View>
+      <Button title='Apagar todos' onPress={() => deleteAllPlayers()} />
     </SafeAreaView>
   );
 }

@@ -62,3 +62,15 @@ export const saveNewPlayer = (data: any): Promise<boolean> => {
     });
   });
 };
+
+
+export const deleteAllPlayers = (): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: any) => {
+      tx.executeSql('DELETE FROM profile', [],
+        (_: any, result: boolean | PromiseLike<boolean>) => resolve(result),
+        (_: any, error: any) => { reject(error); return false }
+      );
+    });
+  });
+}

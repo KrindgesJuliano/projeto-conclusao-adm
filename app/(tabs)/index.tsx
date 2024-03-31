@@ -1,8 +1,9 @@
 import { Button, ScrollView, StyleSheet } from 'react-native';
+import { Link, useFocusEffect } from 'expo-router';
 
 import { Text, View } from '@/components/Themed';
 import Item from '@/components/Item';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getPlayers } from '@/db/sqlite';
 
 export default function TabOneScreen() {
@@ -13,21 +14,27 @@ export default function TabOneScreen() {
     setPlayers(players.reverse());
   }
 
-  useEffect(() => {
-    async () => {
+  useFocusEffect(
+    useCallback(() => {
       GetPlayers();
-    }
-  }, [])
+    }, [])
+  );
 
 
   return (
     <View style={styles.container}>
-      <Button title='Player' onPress={() => GetPlayers()} />
+      {/* <Button title='Player' onPress={() => GetPlayers()} /> */}
       <ScrollView contentContainerStyle={styles.scrollStyle}>
-        {players ? players.map((player: any) => (
+        {players.length > 0 ? players.map((player: any) => (
           <Item key={player.id} name={player.nome} phone={player.telefone} address={player.rua} city={player.cidade} />
-        )) : <Text>Carregando...</Text>}
-
+        )) :
+          <View>
+            <Text style={styles.title}>
+              Nao existe jogadores cadastrados
+            </Text>
+            <Link push href='/(tabs)/perfil' style={styles.navigateButton}>Novo Jogador</Link>
+          </View>
+        }
       </ScrollView>
     </View>
   );
@@ -49,5 +56,16 @@ const styles = StyleSheet.create({
     padding: 10,
     display: 'flex',
     gap: 10
+  },
+  navigateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: 'tomato',
+    color: 'white',
+    textAlign: 'center'
   }
 });
