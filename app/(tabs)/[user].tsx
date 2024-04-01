@@ -6,7 +6,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 
 import { View } from '@/components/Themed';
 import { StyledButton } from '@/components/StyledButton';
-import { deleteAllPlayers, deletePlayerById, findPlayerById, saveNewPlayer, updatePlayer } from '@/db/sqlite';
+import { deletePlayerById, findPlayerById, saveNewPlayer, updatePlayer } from '@/db/sqlite';
 
 export interface FormData {
   nome: string;

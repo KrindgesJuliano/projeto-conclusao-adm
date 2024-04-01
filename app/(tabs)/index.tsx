@@ -1,9 +1,9 @@
-import { Button, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Link, useFocusEffect } from 'expo-router';
 
 import { Text, View } from '@/components/Themed';
 import Item from '@/components/Item';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { getPlayers } from '@/db/sqlite';
 
 export default function TabOneScreen() {
@@ -23,7 +23,6 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-      {/* <Button title='Player' onPress={() => GetPlayers()} /> */}
       <ScrollView contentContainerStyle={styles.scrollStyle}>
         {players.length > 0 ? players.map((player: any) => (
           <Item key={player.id} name={player.nome} phone={player.telefone} address={player.rua} city={player.cidade} id={player.id} />
