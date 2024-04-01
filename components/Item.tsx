@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -19,7 +19,7 @@ export default function Item({ name, phone, address, city, id }: { name: string,
           id
         }
       }}>
-        <Ionicons name="person-circle-outline" size={34} color="tomato" />
+        <MaterialCommunityIcons name="account-edit-outline" size={34} color="tomato" />
       </Link>
     </View>
   );

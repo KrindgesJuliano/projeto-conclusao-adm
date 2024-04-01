@@ -121,6 +121,16 @@ export const findPlayerById = (id: number): Promise<any[]> => {
   });
 }
 
+export const deletePlayerById = (id: number): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: any) => {
+      tx.executeSql('DELETE FROM profile WHERE id = ?', [id],
+        (_: any, result: boolean | PromiseLike<boolean>) => resolve(result),
+        (_: any, error: any) => { reject(error); return false }
+      );
+    });
+  });
+}
 
 export const deleteAllPlayers = (): Promise<boolean> => {
   return new Promise((resolve, reject) => {

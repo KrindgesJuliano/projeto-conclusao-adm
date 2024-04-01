@@ -30,9 +30,9 @@ export default function TabOneScreen() {
         )) :
           <View>
             <Text style={styles.title}>
-              Nao existe jogadores cadastrados
+              Não existem jogadores cadastrados
             </Text>
-            <Link push href='/(tabs)/perfil' style={styles.navigateButton}>Novo Jogador</Link>
+            <Link push href={{ pathname: '/(tabs)/[user]', params: { user: 'new' } }} style={styles.navigateButton}>Novo Jogador</Link>
           </View>
         }
       </ScrollView>

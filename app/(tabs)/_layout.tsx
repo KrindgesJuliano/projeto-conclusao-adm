@@ -67,7 +67,7 @@ export default function TabLayout() {
         name="[user]"
         options={{
           title: 'Cadastro de Competidor',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user-circle-o" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-plus" color={color} />,
           href: {
             pathname: '/(tabs)/[user]',
             params: {

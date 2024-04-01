@@ -6,7 +6,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 
 import { View } from '@/components/Themed';
 import { StyledButton } from '@/components/StyledButton';
-import { deleteAllPlayers, findPlayerById, saveNewPlayer, updatePlayer } from '@/db/sqlite';
+import { deleteAllPlayers, deletePlayerById, findPlayerById, saveNewPlayer, updatePlayer } from '@/db/sqlite';
 
 export interface FormData {
   nome: string;
@@ -115,6 +115,16 @@ export default function TabTwoScreen() {
       reset({ nome: getValues(`nome`), sobrenome: getValues(`sobrenome`), email: getValues(`email`), cep: getValues(`cep`), rua: logradouro, bairro, cidade: localidade, uf })
     }
 
+  }, [])
+
+  const handleDelete = useCallback(async (id: number) => {
+    await deletePlayerById(id);
+    Toast.show({
+      type: `success`,
+      text1: `Sucesso`,
+      text2: `O competidor foi excluídos com sucesso!`,
+    })
+    router.replace('/');
   }, [])
 
   const getEditPlayer = async () => {
@@ -276,13 +286,17 @@ export default function TabTwoScreen() {
         />
         {errors.uf && <Text style={styles.errorText}>{errors.uf.message}</Text>}
         <View style={styles.buttonContainer}>
-          <StyledButton title="Cancelar" onPress={() => handleClear()} color='tomato' grow={1} />
+          {user === 'edit' ?
+            <StyledButton title="Excluir" onPress={() => handleDelete(Number(id))} color='tomato' grow={1} />
+            :
+            <StyledButton title="Cancelar" onPress={() => handleClear()} color='tomato' grow={1} />
+          }
           <StyledButton title="Salvar" onPress={handleSubmit(onSubmit)} color='green' grow={1} />
         </View>
       </View>
-      <View style={{ marginTop: 10 }}>
+      {/* <View style={{ marginTop: 10 }}>
         <Button title='Apagar todos' onPress={() => deleteAllPlayers()} />
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
